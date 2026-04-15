@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tugas Kimia Kelas X: Senyawa Ionik & Persamaan Reaksi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+        body { font-family: 'Poppins', sans-serif; background: #f0f4f8; overflow-x: hidden; scroll-behavior: smooth; }
+        .ion-card { transition: all 0.2s; cursor: pointer; user-select: none; }
+        .ion-card:hover { transform: translateY(-2px); box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); }
+        .ion-card:active { transform: scale(0.95); }
+        .feedback-pop { animation: bounce 0.5s ease-in-out; }
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        sub { font-size: 0.6em; vertical-align: sub; }
+        
+        /* Print Styles */
+        @media print {
+            body { background: white !important; }
+            nav, .no-print, button { display: none !important; }
+            #result-screen { 
+                display: block !important;
+                position: absolute; 
+                left: 0; top: 0; width: 100%; 
+                border: 15px double #1e40af !important; 
+                padding: 40px !important;
+                box-shadow: none !important;
+                margin: 0 !important;
+            }
+            #app-content, #welcome-screen { display: none !important; }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800">
+
+    <!-- Navigation -->
+    <nav class="bg-blue-800 text-white p-4 shadow-xl sticky top-0 z-50 no-print">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-xl font-bold flex items-center gap-2">🧪 <span>Tugas Kimia Kelas X</span></h1>
+            <div class="flex gap-4 items-center">
+                <div id="timer-display" class="bg-blue-900 px-3 py-1 rounded text-sm font-mono border border-blue-500">00:00</div>
+                <div class="text-sm font-bold bg-yellow-400 text-blue-900 px-3 py-1 rounded-full shadow-inner">Skor: <span id="nav-score">0</span></div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mx-auto p-4 max-w-4xl">
+        
+        <!-- Welcome Screen -->
+        <section id="welcome-screen" class="bg-white p-10 rounded-3xl shadow-2xl text-center mt-10 border-t-8 border-blue-800 no-print">
+            <div class="mb-6 inline-block p-4 bg-blue-50 rounded-full text-4xl">📝</div>
+            <h2 class="text-3xl font-bold text-slate-800 mb-2">Tugas Kimia Kelas X</h2>
+            <p class="text-slate-500 mb-8 max-w-md mx-auto">Materi: Tata Nama Senyawa & Persamaan Reaksi Sederhana. Selesaikan seluruh tahapan untuk mendapatkan sertifikat nilai.</p>
+            
+            <div class="mb-8 text-left max-w-sm mx-auto bg-slate-50 p-6 rounded-2xl border border-slate-200">
+                <label class="block text-xs font-black mb-2 text-blue-600 uppercase tracking-widest">Identitas Siswa</label>
+                <input type="text" id="student-name-input" placeholder="Masukkan Nama Lengkap..." class="w-full p-4 border-2 border-slate-200 rounded-xl focus:border-blue-500 outline-none transition-all text-lg font-bold">
+            </div>
+
+            <button onclick="startApp()" class="w-full md:w-auto bg-blue-700 hover:bg-blue-800 text-white font-black py-4 px-16 rounded-2xl transition-all shadow-xl hover:shadow-blue-200 transform hover:-translate-y-1">
+                MULAI MENGERJAKAN TUGAS
+            </button>
+        </section>
+
+        <!-- Main App Content -->
+        <div id="app-content" class="hidden space-y-8 pb-24 no-print">
+            
+            <!-- Level 1: Praktikum (Membentuk Senyawa) -->
+            <section id="level-1" class="bg-white p-8 rounded-3xl shadow-lg border border-slate-100">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+                    <div>
+                        <h2 class="text-xl font-black text-slate-800 flex items-center gap-2">
+                            <span class="bg-blue-700 text-white w-8 h-8 flex items-center justify-center rounded-lg text-sm">I</span>
+                            Bagian 1: Eksperimen Pembentukan Senyawa
+                        </h2>
+                        <p class="text-sm text-slate-500 mt-1">Bentuklah minimal 10 senyawa berbeda dari pilihan kation dan anion di bawah ini.</p>
+                    </div>
+                    <div class="bg-blue-50 px-4 py-2 rounded-xl border border-blue-100">
+                        <span class="text-xs font-bold text-blue-600 uppercase">Target</span>
+                        <div class="text-lg font-black text-blue-800" id="compound-counter">0 / 10 Senyawa</div>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                    <div class="space-y-3">
+                        <p class="text-[10px] font-black text-blue-600 uppercase tracking-widest flex items-center gap-2">
+                            <span class="w-2 h-2 bg-blue-500 rounded-full"></span> Pilih Kation (+)
+                        </p>
+                        <div class="flex flex-wrap gap-3" id="kation-pool"></div>
+                    </div>
+                    <div class="space-y-3">
+                        <p class="text-[10px] font-black text-red-600 uppercase tracking-widest flex items-center gap-2">
+                            <span class="w-2 h-2 bg-red-500 rounded-full"></span> Pilih Anion (-)
+                        </p>
+                        <div class="flex flex-wrap gap-3" id="anion-pool"></div>
+                    </div>
+                </div>
+
+                <div class="bg-slate-900 p-8 rounded-3xl relative overflow-hidden shadow-2xl">
+                    <div class="absolute inset-0 opacity-10 pointer-events-none" style="background-image: radial-gradient(#fff 1px, transparent 1px); background-size: 20px 20px;"></div>
+                    <div id="reaction-area" class="flex flex-col md:flex-row items-center justify-center gap-6 relative z-10">
+                        <div class="flex items-center gap-4">
+                            <div id="slot-kation" class="w-24 h-24 border-4 border-dashed border-blue-500/50 rounded-2xl flex items-center justify-center bg-blue-900/50 text-white font-black text-2xl">?</div>
+                            <span class="text-4xl text-white/20 font-light">+</span>
+                            <div id="slot-anion" class="w-24 h-24 border-4 border-dashed border-red-500/50 rounded-2xl flex items-center justify-center bg-red-900/50 text-white font-black text-2xl">?</div>
+                        </div>
+                        <span class="text-4xl text-white/20">➡</span>
+                        <div id="result-formula" class="min-w-[220px] h-24 border-2 border-white/10 rounded-2xl flex items-center justify-center bg-white/5 text-3xl shadow-inner px-6 text-white font-bold">
+                            <span class="text-white/20 italic text-sm text-center">Hasil Kombinasi</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-8 flex justify-center gap-4">
+                    <button onclick="resetSlots()" class="px-6 py-3 text-slate-400 hover:text-red-500 font-bold transition-colors">Reset Pilihan</button>
+                    <button onclick="checkFormula()" id="btn-check" class="bg-green-600 hover:bg-green-700 text-white px-12 py-3 rounded-2xl font-black hidden shadow-lg shadow-green-200 transition-all transform hover:scale-105 active:scale-95">SIMPAN SENYAWA</button>
+                </div>
+            </section>
+
+            <!-- Level 2: Ujian Tertulis -->
+            <section id="level-2" class="bg-white p-8 rounded-3xl shadow-lg border border-slate-100 hidden">
+                <div class="mb-8">
+                    <h2 class="text-xl font-black text-slate-800 flex items-center gap-2">
+                        <span class="bg-purple-700 text-white w-8 h-8 flex items-center justify-center rounded-lg text-sm">II</span>
+                        Bagian 2: Evaluasi Pemahaman Materi
+                    </h2>
+                    <p class="text-sm text-slate-500 mt-1">Kerjakan soal-soal berikut dengan teliti. Nilai akhir bergantung pada ketepatan jawaban.</p>
+                </div>
+                
+                <div id="quiz-container" class="space-y-10">
+                    <!-- Soal akan di-generate oleh JS -->
+                </div>
+
+                <div class="mt-12 pt-8 border-t border-slate-100">
+                    <button onclick="finishQuiz()" class="w-full bg-blue-800 hover:bg-black text-white py-5 rounded-2xl font-black shadow-xl shadow-blue-100 text-lg transition-all transform hover:-translate-y-1">
+                        SELESAI & TERBITKAN SERTIFIKAT TUGAS
+                    </button>
+                </div>
+            </section>
+        </div>
+
+        <!-- Final Result / Certificate -->
+        <section id="result-screen" class="hidden bg-white p-12 rounded-[40px] shadow-2xl text-center border-[15px] border-double border-blue-900 relative">
+            <div id="certificate-content">
+                <header class="mb-8">
+                    <h3 class="text-blue-900 font-black tracking-[0.4em] uppercase text-[10px] mb-2">Laporan Hasil Belajar Mandiri</h3>
+                    <h2 class="text-4xl font-black text-slate-800 tracking-tight">HASIL TUGAS KIMIA</h2>
+                </header>
+
+                <div class="my-10">
+                    <p class="text-slate-400 italic font-serif text-base">Diberikan kepada:</p>
+                    <p id="display-student-name" class="text-3xl font-black text-blue-900 mt-2 font-serif underline decoration-blue-200 underline-offset-8">Nama Siswa</p>
+                    <p class="text-slate-500 mt-6 max-w-lg mx-auto text-sm">Telah menyelesaikan tugas interaktif materi Tata Nama Senyawa dan Persamaan Reaksi Kelas X dengan rincian capaian:</p>
+                </div>
+
+                <div class="grid grid-cols-3 gap-4 mb-10 max-w-2xl mx-auto">
+                    <div class="bg-slate-50 p-6 rounded-3xl border border-slate-100">
+                        <p class="text-[10px] text-slate-400 font-black uppercase mb-1">Skor Akhir</p>
+                        <p id="final-score" class="text-4xl font-black text-blue-800">0</p>
+                    </div>
+                    <div class="bg-slate-50 p-6 rounded-3xl border border-slate-100">
+                        <p class="text-[10px] text-slate-400 font-black uppercase mb-1">Senyawa</p>
+                        <p id="final-compounds" class="text-4xl font-black text-slate-700">0</p>
+                    </div>
+                    <div class="bg-slate-50 p-6 rounded-3xl border border-slate-100">
+                        <p class="text-[10px] text-slate-400 font-black uppercase mb-1">Durasi</p>
+                        <p id="final-time" class="text-3xl font-black text-slate-700">00:00</p>
+                    </div>
+                </div>
+
+                <div class="border-t border-slate-100 pt-8 flex justify-between items-end text-left px-4">
+                    <div class="text-[9px] text-slate-400 font-mono">
+                        <p>KODE VERIFIKASI: <span id="cert-id" class="font-bold text-slate-600"></span></p>
+                        <p id="cert-date"></p>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-xs font-black text-slate-800 border-t border-slate-200 pt-2 px-4">GURU KIMIA KELAS X</p>
+                        <p class="text-[8px] text-slate-400 uppercase">Valid Digital Result</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-12 flex flex-col md:flex-row gap-4 no-print justify-center">
+                <button onclick="window.print()" class="bg-blue-900 hover:bg-black text-white px-10 py-4 rounded-2xl font-black shadow-xl transition-all flex items-center gap-2 justify-center">
+                    🖨️ CETAK / SIMPAN PDF
+                </button>
+                <button onclick="location.reload()" class="bg-slate-100 hover:bg-slate-200 text-slate-600 px-10 py-4 rounded-2xl font-black transition-all">
+                    ULANGI TUGAS
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        let state = {
+            score: 0,
+            compounds: 0,
+            time: 0,
+            timer: null,
+            studentName: '',
+            currentKation: null,
+            currentAnion: null,
+            targetCompounds: 10,
+            history: new Set()
+        };
+
+        const ions = [
+            { id: 'Na', symbol: 'Na<sup>+</sup>', charge: 1, type: 'kation', name: 'Natrium' },
+            { id: 'K', symbol: 'K<sup>+</sup>', charge: 1, type: 'kation', name: 'Kalium' },
+            { id: 'Mg', symbol: 'Mg<sup>2+</sup>', charge: 2, type: 'kation', name: 'Magnesium' },
+            { id: 'Ca', symbol: 'Ca<sup>2+</sup>', charge: 2, type: 'kation', name: 'Kalsium' },
+            { id: 'Al', symbol: 'Al<sup>3+</sup>', charge: 3, type: 'kation', name: 'Aluminium' },
+            { id: 'Fe2', symbol: 'Fe<sup>2+</sup>', charge: 2, type: 'kation', name: 'Besi(II)' },
+            { id: 'Cl', symbol: 'Cl<sup>-</sup>', charge: -1, type: 'anion', name: 'Klorida' },
+            { id: 'O', symbol: 'O<sup>2-</sup>', charge: -2, type: 'anion', name: 'Oksida' },
+            { id: 'S', symbol: 'S<sup>2-</sup>', charge: -2, type: 'anion', name: 'Sulfida' },
+            { id: 'SO4', symbol: 'SO<sub>4</sub><sup>2-</sup>', charge: -2, type: 'anion', name: 'Sulfat' },
+            { id: 'NO3', symbol: 'NO<sub>3</sub><sup>-</sup>', charge: -1, type: 'anion', name: 'Nitrat' },
+            { id: 'PO4', symbol: 'PO<sub>4</sub><sup>3-</sup>', charge: -3, type: 'anion', name: 'Fosfat' }
+        ];
+
+        const quizData = [
+            // PILIHAN GANDA (5 SOAL)
+            { type: 'pg', q: "Rumus kimia yang benar untuk Aluminium Oksida adalah...", options: ["AlO", "AlO3", "Al2O3", "Al3O2"], correct: "Al2O3" },
+            { type: 'pg', q: "Nama senyawa dari Fe<sub>2</sub>(SO<sub>4</sub>)<sub>3</sub> adalah...", options: ["Besi Sulfat", "Besi(II) Sulfat", "Besi(III) Sulfat", "Feri Sulfida"], correct: "Besi(III) Sulfat" },
+            { type: 'pg', q: "Kation Magnesium (Mg²⁺) bertemu dengan anion Fosfat (PO₄³⁻) membentuk...", options: ["MgPO4", "Mg3PO4", "Mg2(PO4)3", "Mg3(PO4)2"], correct: "Mg3(PO4)2" },
+            { type: 'pg', q: "Manakah di antara senyawa berikut yang memiliki nama 'Kalsium Nitrat'?", options: ["CaNO3", "Ca(NO3)2", "Ca2NO3", "Ca3N2"], correct: "Ca(NO3)2" },
+            { type: 'pg', q: "Nama senyawa dengan rumus kimia K2S adalah...", options: ["Kalium Sulfida", "Dikalium Sulfida", "Kalium(II) Sulfida", "Kalium Sulfat"], correct: "Kalium Sulfida" },
+            
+            // BENAR / SALAH (5 SOAL)
+            { type: 'bs', q: "Rumus kimia Kalium Klorida yang benar adalah KCl.", correct: "B" },
+            { type: 'bs', q: "Senyawa Aluminium Sulfat memiliki rumus kimia AlSO4.", correct: "S" },
+            { type: 'bs', q: "Dalam penulisan rumus kimia senyawa ionik, total muatan positif harus sama dengan total muatan negatif agar senyawa bersifat netral.", correct: "B" },
+            { type: 'bs', q: "Angka indeks dalam rumus kimia menunjukkan muatan dari ion tersebut.", correct: "S" },
+            { type: 'bs', q: "Senyawa Besi(II) Oksida memiliki rumus kimia FeO.", correct: "B" },
+
+            // ISIAN / PERSAMAAN (5 SOAL)
+            { type: 'fill', q: "Tuliskan rumus kimia untuk senyawa Natrium Sulfat:", correct: "na2so4" },
+            { type: 'fill', q: "Lengkapi koefisien reaksi berikut: _ NaOH + H2SO4 &rarr; Na2SO4 + 2H2O", correct: "2" },
+            { type: 'fill', q: "Tentukan koefisien untuk gas oksigen: 2Mg + _ O2 &rarr; 2MgO", correct: "1" },
+            { type: 'fill', q: "Apa nama IUPAC untuk senyawa FeCl3? Besi(___) Klorida (Gunakan angka romawi kecil, misal: iii)", correct: "iii" },
+            { type: 'fill', q: "Rumus kimia dari Kalsium Fosfat adalah Ca3(PO4)x. Berapakah nilai x?", correct: "2" }
+        ];
+
+        function startApp() {
+            const name = document.getElementById('student-name-input').value.trim();
+            if (!name) { alert("Tolong masukkan nama Anda."); return; }
+            state.studentName = name;
+            document.getElementById('welcome-screen').classList.add('hidden');
+            document.getElementById('app-content').classList.remove('hidden');
+            renderPools();
+            renderQuiz();
+            startTimer();
+        }
+
+        function startTimer() {
+            state.timer = setInterval(() => {
+                state.time++;
+                const m = Math.floor(state.time / 60).toString().padStart(2, '0');
+                const s = (state.time % 60).toString().padStart(2, '0');
+                document.getElementById('timer-display').innerText = `${m}:${s}`;
+            }, 1000);
+        }
+
+        function renderPools() {
+            const kPool = document.getElementById('kation-pool');
+            const aPool = document.getElementById('anion-pool');
+            kPool.innerHTML = ''; aPool.innerHTML = '';
+            ions.forEach(ion => {
+                const card = document.createElement('div');
+                card.className = `ion-card p-3 border-2 rounded-xl text-center w-16 h-16 flex items-center justify-center font-bold text-sm shadow-sm ${ion.type === 'kation' ? 'border-blue-100 bg-white text-blue-600' : 'border-red-100 bg-white text-red-600'}`;
+                card.innerHTML = ion.symbol;
+                card.onclick = () => selectIon(ion);
+                (ion.type === 'kation' ? kPool : aPool).appendChild(card);
+            });
+        }
+
+        function selectIon(ion) {
+            if (ion.type === 'kation') {
+                state.currentKation = ion;
+                document.getElementById('slot-kation').innerHTML = ion.symbol;
+                document.getElementById('slot-kation').className = "w-24 h-24 border-4 border-solid border-blue-500 rounded-2xl flex items-center justify-center bg-blue-50 text-blue-700 font-black text-2xl shadow-lg";
+            } else {
+                state.currentAnion = ion;
+                document.getElementById('slot-anion').innerHTML = ion.symbol;
+                document.getElementById('slot-anion').className = "w-24 h-24 border-4 border-solid border-red-500 rounded-2xl flex items-center justify-center bg-red-50 text-red-700 font-black text-2xl shadow-lg";
+            }
+
+            if (state.currentKation && state.currentAnion) {
+                document.getElementById('btn-check').classList.remove('hidden');
+                calculateResult();
+            }
+        }
+
+        function calculateResult() {
+            const kCharge = Math.abs(state.currentKation.charge);
+            const aCharge = Math.abs(state.currentAnion.charge);
+            const gcd = (a, b) => b === 0 ? a : gcd(b, a % b);
+            const common = gcd(kCharge, aCharge);
+            const kIdx = aCharge / common;
+            const aIdx = kCharge / common;
+
+            let html = `<span class="text-blue-500">${state.currentKation.id.replace('2','')}</span>`;
+            if (kIdx > 1) html += `<sub>${kIdx}</sub>`;
+
+            const poly = ['SO4', 'NO3', 'PO4'];
+            let aStr = state.currentAnion.id;
+            if (aStr === 'SO4') aStr = 'SO<sub>4</sub>';
+            if (aStr === 'NO3') aStr = 'NO<sub>3</sub>';
+            if (aStr === 'PO4') aStr = 'PO<sub>4</sub>';
+
+            if (aIdx > 1 && poly.includes(state.currentAnion.id)) {
+                html += `<span class="text-red-500">(${aStr})<sub>${aIdx}</sub></span>`;
+            } else {
+                html += `<span class="text-red-500">${aStr}</span>`;
+                if (aIdx > 1) html += `<span class="text-red-500"><sub>${aIdx}</sub></span>`;
+            }
+            document.getElementById('result-formula').innerHTML = html;
+        }
+
+        function resetSlots() {
+            state.currentKation = null; state.currentAnion = null;
+            document.getElementById('slot-kation').innerHTML = '?';
+            document.getElementById('slot-anion').innerHTML = '?';
+            document.getElementById('result-formula').innerHTML = '<span class="text-slate-300 italic text-sm text-center">Hasil Kombinasi</span>';
+            document.getElementById('btn-check').classList.add('hidden');
+            document.getElementById('slot-kation').className = "w-24 h-24 border-4 border-dashed border-blue-500/50 rounded-2xl flex items-center justify-center bg-blue-900/50 text-white font-black text-2xl";
+            document.getElementById('slot-anion').className = "w-24 h-24 border-4 border-dashed border-red-500/50 rounded-2xl flex items-center justify-center bg-red-900/50 text-white font-black text-2xl";
+        }
+
+        function checkFormula() {
+            const key = state.currentKation.id + state.currentAnion.id;
+            if (state.history.has(key)) {
+                alert("Senyawa ini sudah kamu buat!");
+                resetSlots(); return;
+            }
+            state.history.add(key);
+            state.score += 15;
+            state.compounds++;
+            updateStats();
+            
+            const res = document.getElementById('result-formula');
+            res.classList.add('bg-green-100', 'border-green-500', 'feedback-pop');
+
+            setTimeout(() => {
+                res.classList.remove('bg-green-100', 'border-green-500', 'feedback-pop');
+                resetSlots();
+                if (state.compounds >= state.targetCompounds) {
+                    document.getElementById('level-1').classList.add('opacity-50', 'pointer-events-none');
+                    document.getElementById('level-2').classList.remove('hidden');
+                    document.getElementById('level-2').scrollIntoView({ behavior: 'smooth' });
+                }
+            }, 800);
+        }
+
+        function updateStats() {
+            document.getElementById('nav-score').innerText = state.score;
+            document.getElementById('compound-counter').innerText = `${state.compounds} / ${state.targetCompounds} Senyawa`;
+        }
+
+        function renderQuiz() {
+            const container = document.getElementById('quiz-container');
+            quizData.forEach((item, index) => {
+                const div = document.createElement('div');
+                div.className = "bg-slate-50 p-6 rounded-3xl border border-slate-100 space-y-4";
+                
+                let content = `<p class="font-bold text-slate-800 text-sm"><span class="text-blue-500 mr-2">${index + 1}.</span> ${item.q}</p>`;
+                
+                if (item.type === 'pg') {
+                    content += `<div class="grid grid-cols-1 md:grid-cols-2 gap-3">`;
+                    item.options.forEach(opt => {
+                        content += `
+                            <label class="flex items-center gap-3 bg-white p-4 rounded-xl border border-slate-200 cursor-pointer hover:bg-blue-50 transition-colors">
+                                <input type="radio" name="q${index}" value="${opt}" class="w-4 h-4 text-blue-600">
+                                <span class="text-sm">${opt}</span>
+                            </label>`;
+                    });
+                    content += `</div>`;
+                } else if (item.type === 'bs') {
+                    content += `
+                        <div class="flex gap-4">
+                            <label class="flex items-center gap-2 bg-white px-6 py-3 rounded-xl border border-slate-200 cursor-pointer hover:bg-green-50">
+                                <input type="radio" name="q${index}" value="B"> <span class="text-sm font-bold text-green-600">BENAR</span>
+                            </label>
+                            <label class="flex items-center gap-2 bg-white px-6 py-3 rounded-xl border border-slate-200 cursor-pointer hover:bg-red-50">
+                                <input type="radio" name="q${index}" value="S"> <span class="text-sm font-bold text-red-600">SALAH</span>
+                            </label>
+                        </div>`;
+                } else {
+                    content += `<input type="text" id="ans${index}" placeholder="Jawaban..." class="w-full p-4 border-2 border-slate-200 rounded-xl outline-none focus:border-blue-500 font-mono text-sm">`;
+                }
+                
+                div.innerHTML = content;
+                container.appendChild(div);
+            });
+        }
+
+        function finishQuiz() {
+            quizData.forEach((item, index) => {
+                let userAns = "";
+                if (item.type === 'fill') {
+                    userAns = document.getElementById(`ans${index}`).value.trim().toLowerCase();
+                } else {
+                    const checked = document.querySelector(`input[name="q${index}"]:checked`);
+                    if (checked) userAns = checked.value;
+                }
+
+                if (userAns === item.correct.toLowerCase()) {
+                    state.score += 20;
+                }
+            });
+
+            clearInterval(state.timer);
+            showCertificate();
+        }
+
+        function showCertificate() {
+            document.getElementById('app-content').classList.add('hidden');
+            document.getElementById('result-screen').classList.remove('hidden');
+            
+            document.getElementById('display-student-name').innerText = state.studentName;
+            document.getElementById('final-score').innerText = state.score;
+            document.getElementById('final-compounds').innerText = state.compounds;
+            document.getElementById('final-time').innerText = document.getElementById('timer-display').innerText;
+            
+            document.getElementById('cert-id').innerText = 'KIM-X-' + Math.random().toString(36).substr(2, 8).toUpperCase();
+            document.getElementById('cert-date').innerText = `TANGGAL: ${new Date().toLocaleDateString('id-ID')}`;
+            window.scrollTo(0, 0);
+        }
+    </script>
+</body>
+</html>
